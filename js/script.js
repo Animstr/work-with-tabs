@@ -156,12 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
     //make a shablone of cards
 
     class FitoCard {
-        constructor (img, alt, header, text, price) {
+        constructor (img, alt, header, text, price, ...classes) {
             this.img = img;
             this.alt = alt;
             this.header = header;
             this.text = text;
             this.price = price;
+            this.classes = classes;
             this.course = 89;
             this.exchanger();
         }
@@ -173,15 +174,20 @@ document.addEventListener('DOMContentLoaded', () => {
         render() {
             const div = document.createElement('div'),
                 container = document.querySelector('[data-container]');
-            div.innerHTML = `<div class="menu__item">
-                                <img src="${this.img}" alt="${this.alt}">
-                                <h3 class="menu__item-subtitle">Меню "${this.header}"</h3>
-                                <div class="menu__item-descr">${this.text}</div>
-                                <div class="menu__item-divider"></div>
-                                <div class="menu__item-price">
-                                    <div class="menu__item-cost">Цена:</div>
-                                    <div class="menu__item-total"><span>${this.price}</span> руб/день</div>
-                                </div>
+            
+            if (this.classes.length == 0) {
+                div.classList.add('menu__item');
+            } else {
+                this.classes.forEach(className => div.classList.add(className));
+            }
+
+            div.innerHTML = `<img src="${this.img}" alt="${this.alt}">
+                            <h3 class="menu__item-subtitle">Меню "${this.header}"</h3>
+                            <div class="menu__item-descr">${this.text}</div>
+                            <div class="menu__item-divider"></div>
+                            <div class="menu__item-price">
+                                <div class="menu__item-cost">Цена:</div>
+                                <div class="menu__item-total"><span>${this.price}</span> руб/день</div>
                             </div>`
             
             container.appendChild(div);
@@ -193,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         '15'),
         eliteMenu = new FitoCard('img/tabs/elite.jpg', 'elite', 'Премиум', 
             'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-        '35'),
+        '35' ),
         postMenu = new FitoCard('img/tabs/post.jpg', 'post', 'Постное', 
             'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
         '20');
@@ -201,4 +207,52 @@ document.addEventListener('DOMContentLoaded', () => {
     fitnesMenu.render();
     eliteMenu.render();
     postMenu.render();
+
+    //slider
+    
+    const sliderCounter = document.querySelector('#current'),
+            slideImg = document.querySelectorAll('[data-slider]'),
+            nextSlide = document.querySelector('.offer__slider-next'),
+            prevSlide = document.querySelector('.offer__slider-prev');
+
+    let i = 0;
+
+    function removeSliderImgs () {
+        slideImg.forEach(function (element) {
+            element.classList.remove('show');
+            element.classList.add('hide');
+        })
+    };
+
+    function addShowClass() {
+        slideImg[i].classList.remove('hide');
+        slideImg[i].classList.add('show');
+    }
+
+    nextSlide.addEventListener('click', () => {
+        removeSliderImgs();
+        if (i < 3) {
+            i++;
+            addShowClass();
+        } else {
+            i = 0;
+            addShowClass();
+        }
+
+        sliderCounter.innerHTML = `0${i+1}`
+    })
+
+    prevSlide.addEventListener('click', () => {
+        removeSliderImgs();
+        
+        if (i > 0) {
+            i--;
+            addShowClass();
+        } else {
+            i = 3;
+            addShowClass(); 
+        }
+
+        sliderCounter.innerHTML = `0${i+1}`
+    })
 })
