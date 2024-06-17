@@ -255,4 +255,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
         sliderCounter.innerHTML = `0${i+1}`
     })
+
+    //Push form to server
+
+    const forms = document.querySelectorAll('form');
+    forms.forEach(function (item) {
+        pushData(item);
+    })
+
+    function pushData (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const status = document.createElement('div');
+            const message = {
+                loading: 'Идет загрузка',
+                done: 'Заявка успешно отправлена',
+                failure: 'Что-то пошло не так, вернитесь позже'
+            };
+
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+
+            const formData = new FormData(form);
+            request.send(formData);
+
+            status.textContent = message.loading;
+            form.append(status);
+
+            request.addEventListener('load', () => {
+                if (request.status == 200) {
+                    status.textContent = message.done;
+                    form.reset();
+                } else {
+                    status.textContent = message.failure;
+                }
+                setTimeout(() => {
+                    status.remove()
+                }, 3000);
+            })
+        })
+    }
 })
