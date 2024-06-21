@@ -325,4 +325,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 modalMessage.classList.remove('hide');
             }, 3000);
     };
+
+    fetch('http://localhost:3000/menu')
+        .then(data => data.json())
+        .then(data => console.log(data));
 })
