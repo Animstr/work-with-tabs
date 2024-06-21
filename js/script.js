@@ -191,19 +191,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }    
     }
 
-    const fitnesMenu = new FitoCard('img/tabs/vegy.jpg', 'vegy', 'Фитнес',
-         'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-        '15'),
-        eliteMenu = new FitoCard('img/tabs/elite.jpg', 'elite', 'Премиум', 
-            'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-        '35' ),
-        postMenu = new FitoCard('img/tabs/post.jpg', 'post', 'Постное', 
-            'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-        '20');
+    const postCards = async (url) => {
+        const res = await fetch (url);
+        
+        if (!res.ok) {
+            throw new Error(`Could not fetch ${url}, status = ${res.status}`);
+        }
 
-    fitnesMenu.render();
-    eliteMenu.render();
-    postMenu.render();
+        return await res.json();
+    };
+
+    postCards('http://localhost:3000/menu')
+        .then((data) => {
+            data.forEach(({img, altimg, title, descr, price}) => {
+                new FitoCard(img, altimg, title, descr, price).render()
+            })
+        })
 
     //slider
     
@@ -257,10 +260,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const forms = document.querySelectorAll('form');
     forms.forEach(function (item) {
-        pushData(item);
+        compilatingPushData(item);
     })
 
-    function pushData (form) {
+    const pushData = async (url, data) => {
+        const res = await fetch (url, {
+            method: 'POST',
+            headers:{
+                'Content-type': 'application/json'
+            },
+            body: data
+        });   
+        return await res.json();
+    }
+
+    function compilatingPushData (form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
@@ -272,32 +286,24 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             const formData = new FormData(form);
-            const object = {};
-            formData.forEach((key, value) => {
-                object[key] = value;
-            });
+            
+            const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
             status.src = message.loading;
             status.style.cssText = `
                 margin: 0 auto;
                 display: block;
             `;
+            form.insertAdjacentElement('afterend', status);
 
-            fetch('server.php', {
-                method: 'POST',
-                headers:{
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify(object)
-            })
-            .then(data => data.text())
-            .then(data => {console.log(data)})
-            .then(() => {modalAfterPush(message.done)})
-            .catch(() => {modalAfterPush(message.failure)})
-            .finally(() => {
-                form.reset();
-                status.remove();
-            })
+            pushData('http://localhost:3000/requests', json)
+                .then(data => {console.log(data)})
+                .then(() => {modalAfterPush(message.done)})
+                .catch(() => {modalAfterPush(message.failure)})
+                .finally(() => {
+                    form.reset();
+                    status.remove();
+                })
         })
     };
 
@@ -325,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 modalMessage.classList.remove('hide');
             }, 3000);
     };
-
+ 
     fetch('http://localhost:3000/menu')
         .then(data => data.json())
         .then(data => console.log(data));
