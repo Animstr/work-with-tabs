@@ -191,31 +191,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }    
     }
 
-    const postCards = async (url) => {
-        const res = await fetch (url);
-        
-        if (!res.ok) {
-            throw new Error(`Could not fetch ${url}, status = ${res.status}`);
-        }
-
-        return await res.json();
-    };
-
-    postCards('http://localhost:3000/menu')
-        .then((data) => {
-            data.forEach(({img, altimg, title, descr, price}) => {
+    axios.get('http://localhost:3000/menu')
+        .then(data => {
+            data.data.forEach(({img, altimg, title, descr, price}) => {
                 new FitoCard(img, altimg, title, descr, price).render()
             })
         })
 
     //slider
     
-    const sliderCounter = document.querySelector('#current'),
+    const   current = document.querySelector('#current'),
+            total = document.querySelector('#total'),
             slideImg = document.querySelectorAll('[data-slider]'),
             nextSlide = document.querySelector('.offer__slider-next'),
             prevSlide = document.querySelector('.offer__slider-prev');
 
-    let i = 0;
+    let slideIndex = 1;
+
+    showSlides(slideIndex);
+
+    if (slideImg.length < 10) {
+        total.textContent = `0${slideImg.length}`;
+    } else {
+        total.textContent = slideImg.length;
+    }
 
     function removeSliderImgs () {
         slideImg.forEach(function (element) {
@@ -225,36 +224,43 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     function addShowClass() {
-        slideImg[i].classList.remove('hide');
-        slideImg[i].classList.add('show');
+        slideImg[slideIndex - 1].classList.remove('hide');
+        slideImg[slideIndex - 1].classList.add('show');
+    }
+    function showSlides(n) {
+        if (n > slideImg.length) {
+            slideIndex = 1;
+        }
+
+        if(n < 1){
+            slideIndex = slideImg.length;
+        };
+
+        removeSliderImgs();
+        addShowClass();
+    }
+
+    function plusSlides (n) {
+        showSlides(slideIndex += n);
     }
 
     nextSlide.addEventListener('click', () => {
-        removeSliderImgs();
-        if (i < 3) {
-            i++;
-            addShowClass();
+        plusSlides(1);
+        if (slideImg.length < 10) {
+            current.textContent = `0${slideIndex}`;
         } else {
-            i = 0;
-            addShowClass();
+            current.textContent = slideIndex;
         }
-
-        sliderCounter.innerHTML = `0${i+1}`
     })
 
     prevSlide.addEventListener('click', () => {
-        removeSliderImgs();
-        
-        if (i > 0) {
-            i--;
-            addShowClass();
-        } else {
-            i = 3;
-            addShowClass(); 
-        }
-
-        sliderCounter.innerHTML = `0${i+1}`
-    })
+      plusSlides(-1);
+      if (slideImg.length < 10) {
+        current.textContent = `0${slideIndex}`;
+    } else {
+        current.textContent = slideIndex;
+    }
+    });
 
     //Push form to server
 
@@ -332,7 +338,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 3000);
     };
  
-    fetch('http://localhost:3000/menu')
-        .then(data => data.json())
-        .then(data => console.log(data));
 })

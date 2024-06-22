@@ -26,20 +26,6 @@
     }
   ],
   "requests": [
-    {
-      "id": "0096",
-      "name": "Daniil",
-      "phone": "79995221462"
-    },
-    {
-      "id": "9e50",
-      "name": "Daniil",
-      "phone": "79995221462"
-    },
-    {
-      "id": "a50e",
-      "name": "qwadfasfsafsdf",
-      "phone": "79995221462"
-    }
+
   ]
 }
