@@ -202,65 +202,77 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const   current = document.querySelector('#current'),
             total = document.querySelector('#total'),
-            slideImg = document.querySelectorAll('[data-slider]'),
+            slide = document.querySelectorAll('[data-slider]'),
             nextSlide = document.querySelector('.offer__slider-next'),
-            prevSlide = document.querySelector('.offer__slider-prev');
+            prevSlide = document.querySelector('.offer__slider-prev'),
+            slidesField = document.querySelector('.offer__slider-inner'),
+            slideWindow = document.querySelector('.offer__slider-wrapper');
+            width = window.getComputedStyle(slideWindow).width;
 
     let slideIndex = 1;
+    let offset = 0;
 
-    showSlides(slideIndex);
+    slidesField.style.width = 100 * slide.length + '%';
+    slidesField.style.display = 'flex';
+    slidesField.style.transition = 'all .5s ease-in-out';
 
-    if (slideImg.length < 10) {
-        total.textContent = `0${slideImg.length}`;
-    } else {
-        total.textContent = slideImg.length;
-    }
+    slideWindow.style.overflow = 'hidden';
 
-    function removeSliderImgs () {
-        slideImg.forEach(function (element) {
-            element.classList.remove('show');
-            element.classList.add('hide');
-        })
-    };
-
-    function addShowClass() {
-        slideImg[slideIndex - 1].classList.remove('hide');
-        slideImg[slideIndex - 1].classList.add('show');
-    }
-    function showSlides(n) {
-        if (n > slideImg.length) {
-            slideIndex = 1;
+    slide.forEach(slide => {
+        slide.style.width = width;
+    })
+    
+    nextSlide.addEventListener('click', () => {
+        if (offset == +width.slice(0, width.length - 2) * (slide.length - 1)) {
+            offset = 0;
+        } else {
+            offset += +width.slice(0, width.length - 2);
         }
 
-        if(n < 1){
-            slideIndex = slideImg.length;
-        };
+        if (slideIndex == slide.length) {
+            slideIndex = 1;
+        } else {
+            slideIndex++;
+        }
 
-        removeSliderImgs();
-        addShowClass();
-    }
-
-    function plusSlides (n) {
-        showSlides(slideIndex += n);
-    }
-
-    nextSlide.addEventListener('click', () => {
-        plusSlides(1);
-        if (slideImg.length < 10) {
+        if (slide.length < 10) {
             current.textContent = `0${slideIndex}`;
         } else {
             current.textContent = slideIndex;
         }
-    })
+    
+        slidesField.style.transform = `translateX(-${offset}px)`;
+    });
 
     prevSlide.addEventListener('click', () => {
-      plusSlides(-1);
-      if (slideImg.length < 10) {
-        current.textContent = `0${slideIndex}`;
-    } else {
-        current.textContent = slideIndex;
-    }
+        if (offset == 0) {
+            offset = +width.slice(0, width.length - 2) * (slide.length - 1)
+        } else {
+            offset -= +width.slice(0, width.length - 2);
+        }
+
+        if (slideIndex == 1) {
+            slideIndex = slide.length;
+        } else {
+            slideIndex--;
+        }
+        
+        
+
+        if (slide.length < 10) {
+            current.textContent = `0${slideIndex}`;
+        } else {
+            current.textContent = slideIndex;
+        }
+
+        slidesField.style.transform = `translateX(-${offset}px)`;
     });
+    
+    if (slide.length < 10) {
+        total.textContent = `0${slide.length}`;
+    } else {
+        total.textContent = slide.length;
+    }
 
     //Push form to server
 
