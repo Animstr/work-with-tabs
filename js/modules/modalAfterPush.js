@@ -1,21 +1,13 @@
-function modalAfterPush() {
+import {open, close} from '../modules/modalWindow';
+import {pushData} from '../services/services';
+
+function modalAfterPush(modalTimer, modalSelector, formSelector) {
         //Push form to server
 
-        const forms = document.querySelectorAll('form');
+        const forms = document.querySelectorAll(formSelector);
         forms.forEach(function (item) {
             compilatingPushData(item);
-        })
-    
-        const pushData = async (url, data) => {
-            const res = await fetch (url, {
-                method: 'POST',
-                headers:{
-                    'Content-type': 'application/json'
-                },
-                body: data
-            });   
-            return await res.json();
-        }
+        });
     
         function compilatingPushData (form) {
             form.addEventListener('submit', (e) => {
@@ -54,7 +46,7 @@ function modalAfterPush() {
             const modalMessage = document.querySelector('.modal__dialog');
                 
                 modalMessage.classList.add('hide');
-                open();
+                open('.modal', modalTimer);
     
                 const thanksMessage = document.createElement('div');
     
@@ -64,11 +56,13 @@ function modalAfterPush() {
                     <div data-close class="modal__close">&times;</div>
                     <div class="modal__title">${text}</div>
                 </div>`
-    
+
+                const modalWindow = document.querySelector(modalSelector);
+
                 modalWindow.append(thanksMessage);
     
                 setTimeout(function () {
-                    close();
+                    close('.modal', modalTimer);
                     thanksMessage.remove();
                     modalMessage.classList.add('show');
                     modalMessage.classList.remove('hide');
@@ -76,4 +70,4 @@ function modalAfterPush() {
         };
 };
 
-module.exports = modalAfterPush;
+export default modalAfterPush;

@@ -1,14 +1,15 @@
-function slider() {
+function slider({currentSelector, totalSelector, sliderSelector, slideSelector, nextSlideSelector,
+    prevSlideSelector, slidesFieldSelector, slideWindowSelector}) {
         //slider
     
-        const   current = document.querySelector('#current'),
-        total = document.querySelector('#total'),
-        slider = document.querySelector('.offer__slider'),
-        slide = document.querySelectorAll('[data-slider]'),
-        nextSlide = document.querySelector('.offer__slider-next'),
-        prevSlide = document.querySelector('.offer__slider-prev'),
-        slidesField = document.querySelector('.offer__slider-inner'),
-        slideWindow = document.querySelector('.offer__slider-wrapper');
+        const   current = document.querySelector(currentSelector),
+        total = document.querySelector(totalSelector),
+        slider = document.querySelector(sliderSelector),
+        slide = document.querySelectorAll(slideSelector),
+        nextSlide = document.querySelector(nextSlideSelector),
+        prevSlide = document.querySelector(prevSlideSelector),
+        slidesField = document.querySelector(slidesFieldSelector),
+        slideWindow = document.querySelector(slideWindowSelector),
         width = window.getComputedStyle(slideWindow).width;
 
 let slideIndex = 1;
@@ -153,4 +154,4 @@ dots.forEach(dot => {
 })
 };
 
-module.exports = slider;
+export default slider;

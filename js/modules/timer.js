@@ -1,6 +1,5 @@
-function timer() {
+function timer(id, endTime) {
         //Timer
-        let endTime = '2024-09-01';
     
         function getRemainingTime(endDate) {
     
@@ -59,7 +58,7 @@ function timer() {
             }
         }
         
-        alertTime('.timer', endTime);
+        alertTime(id, endTime);
 };
 
-module.exports = timer;
+export default timer;

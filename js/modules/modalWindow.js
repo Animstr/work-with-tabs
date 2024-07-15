@@ -1,43 +1,46 @@
-function modalWindow() {
+function open (modalSelector, modalTimer) {
+    const modalWindow = document.querySelector(modalSelector);
+
+    modalWindow.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    if(modalTimer){
+        clearTimeout(modalTimer);
+    }
+};
+
+function close (modalSelector) {
+    const modalWindow = document.querySelector(modalSelector);
+
+    modalWindow.style.display = 'none';
+    document.body.style.overflow = '';
+};
+
+function modalWindow(modalSelector, openModalSelector, modalTimer) {
         //modalWindow
 
-        const modalWindow = document.querySelector('.modal'),
-        openModal = document.querySelectorAll('[data-modal]');
-        
-    function open () {
-        modalWindow.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-        clearTimeout(modalTimer);
-    };
-
-    function close () {
-            modalWindow.style.display = 'none';
-            document.body.style.overflow = '';
-        };
-    
+        const modalWindow = document.querySelector(modalSelector),
+        openModal = document.querySelectorAll(openModalSelector);
     
     openModal.forEach(function (button) {
-        button.addEventListener('click', open)
+        button.addEventListener('click', () => open(modalSelector, modalTimer))
     });
     
     modalWindow.addEventListener('click', (e) => {
         if (e.target === modalWindow || e.target.getAttribute('data-close') == '') {
-            close();
+            close(modalSelector);
         }
     });
 
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Escape') {
-            close();
+            close(modalSelector);
         }
     });
-
-    let modalTimer = setTimeout(open, 5000);
 
     function scrollBottomOpenModal () {
         if (window.pageYOffset + document.documentElement.clientHeight >=
              document.documentElement.scrollHeight ) {
-            open();
+            open(modalSelector, modalTimer);
             removeEventListener('scroll', scrollBottomOpenModal);
         }
     };
@@ -45,4 +48,6 @@ function modalWindow() {
     window.addEventListener('scroll', scrollBottomOpenModal);
 };
 
-module.exports = modalWindow;
+export default modalWindow;
+export {open};
+export {close};
